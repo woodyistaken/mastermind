@@ -31,13 +31,13 @@ module CoderMethods
 
   def convert_str_to_num_arr(str)
     str_arr = str.chars
-    str_arr.map do |str|
-      str.to_i.between?(1, 6) ? str.to_i : -1
+    str_arr.map do |num|
+      num.to_i.between?(1, 6) ? num.to_i : -1
     end
   end
 
   def code_reply(guess_arr)
-    code = @coder.guess(guess_arr).join
+    code = @coder.reply(guess_arr).join
     return true if code == "GGGG"
 
     puts "Reply: #{code}"
@@ -52,9 +52,52 @@ module CoderMethods
   end
 end
 
+# methods used when computer is guessing
+module GuesserMethods
+  def play_guesser
+    round = 0
+    until round >= 12
+      guess = @guesser.guess
+      return unless guess
+
+      puts "Computer's guess: #{guess}"
+      break if @guesser.process_reply(get_reply)
+
+      round += 1
+    end
+    if round >= 12
+      puts "I lost"
+    else
+      puts "I guessed the correct combination!"
+    end
+  end
+
+  def get_reply
+    reply = ""
+    loop do
+      print "Your reply: "
+      reply = gets.chomp.upcase
+      break if check_reply(reply)
+
+      puts "Invalid input"
+    end
+    reply
+  end
+
+  def check_reply(reply)
+    return false unless reply.length == 4
+
+    reply.chars.each do |letter|
+      return false unless %w[G R Y].include?(letter)
+    end
+    true
+  end
+end
+
 # A game class to play the game in
 class Game
   include CoderMethods
+  include GuesserMethods
 
   def initialize
     @guesser = Guesser.new
@@ -71,9 +114,4 @@ class Game
       break if gets.chomp == "n"
     end
   end
-
-  def play_guesser
-  end
-
-  private
 end

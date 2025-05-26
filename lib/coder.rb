@@ -9,12 +9,12 @@ class Coder
 
   def choose
     @combination = []
-    4.times do |i|
+    4.times do |_i|
       @combination.push(CHOICES.sample)
     end
   end
 
-  def guess(arr)
+  def reply(arr)
     code = []
     4.times do |i|
       char = if @combination.include?(arr[i])
